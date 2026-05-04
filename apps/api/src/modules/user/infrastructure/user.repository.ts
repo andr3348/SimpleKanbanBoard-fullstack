@@ -3,7 +3,7 @@ import {
   CreateUserInput,
   IUserRepository,
 } from '../domain/user.repository.interface';
-import { PrismaService } from 'src/modules/prisma/prisma.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { User } from '../domain/user.entity';
 import { User as PrismaUser } from 'src/generated/prisma/client';
 
