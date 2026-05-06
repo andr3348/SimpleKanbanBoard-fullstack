@@ -1,13 +1,13 @@
-import { User } from '../../domain/user.entity';
+import { User } from 'src/modules/user/domain/user.entity';
 
-export class UserResponseDto {
+export class AuthResponseDto {
   id: string;
   name: string;
   email: string;
   createdAt: Date;
 
-  static fromEntity(user: User): UserResponseDto {
-    const dto = new UserResponseDto();
+  static fromEntity(user: User): AuthResponseDto {
+    const dto = new AuthResponseDto();
     dto.id = user.id;
     dto.name = user.name;
     dto.email = user.email;

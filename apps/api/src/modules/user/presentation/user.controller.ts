@@ -1,12 +1,20 @@
-import { Controller, Get, Param, ParseUUIDPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  UseGuards,
+} from '@nestjs/common';
 import { UserResponseDto } from './dtos/user-response.dto';
-import { GetUserUseCase } from '../application/user-cases/get-user.usecase';
+import { GetUserUseCase } from '../application/use-cases/get-user.usecase';
+import { JwtAuthGuard } from 'src/modules/auth/infrastructure/guards/jwt-auth.guard';
 
 @Controller('users')
 export class UserController {
   constructor(private readonly getUserUseCase: GetUserUseCase) {}
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
   async getUser(
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<UserResponseDto> {
