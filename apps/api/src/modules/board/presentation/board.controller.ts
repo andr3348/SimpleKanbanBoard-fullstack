@@ -8,8 +8,6 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
-  Req,
-  Request,
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/modules/auth/infrastructure/guards/jwt-auth.guard';
@@ -17,9 +15,12 @@ import { CreateBoardUseCase } from '../application/use-cases/create-board.usecas
 import { GetBoardsUseCase } from '../application/use-cases/get-boards.usecase';
 import { GetBoardUseCase } from '../application/use-cases/get-board.usecase';
 import { DeleteBoardUseCase } from '../application/use-cases/delete-board.usecase';
-import { Request, Request, type Request } from 'express';
 import { BoardResponseDto } from './dtos/board-response.dto';
 import { CreateBoardDto } from '../application/dtos/create-board.dto';
+import {
+  type AuthenticatedUser,
+  CurrentUser,
+} from 'src/common/decorators/current-user.decorator';
 
 @Controller('boards')
 @UseGuards(JwtAuthGuard)
@@ -32,17 +33,19 @@ export class BoardController {
   ) {}
 
   @Get()
-  async getBoards(@Req() req: Request): Promise<BoardResponseDto[]> {
-    const board = await this.getBoardsUseCase.execute(req.user['id']); // req.user['id'] is what JwtStrategy.validate() returns
+  async getBoards(
+    @CurrentUser() user: AuthenticatedUser,
+  ): Promise<BoardResponseDto[]> {
+    const board = await this.getBoardsUseCase.execute(user.id);
     return board.map((b) => BoardResponseDto.fromEntity(b));
   }
 
   @Get(':id')
   async getBoard(
     @Param('id', ParseUUIDPipe) id: string,
-    @Req() req: Request,
+    @CurrentUser() user: AuthenticatedUser,
   ): Promise<BoardResponseDto> {
-    const board = await this.getBoardUseCase.execute(id, req.user['id']);
+    const board = await this.getBoardUseCase.execute(id, user.id);
     return BoardResponseDto.fromEntity(board);
   }
 
@@ -50,9 +53,9 @@ export class BoardController {
   @HttpCode(HttpStatus.CREATED)
   async createBoard(
     @Body() dto: CreateBoardDto,
-    @Req() req: Request,
+    @CurrentUser() user: AuthenticatedUser,
   ): Promise<BoardResponseDto> {
-    const board = await this.createBoardUseCase.execute(dto, req.user['id']);
+    const board = await this.createBoardUseCase.execute(dto, user.id);
     return BoardResponseDto.fromEntity(board);
   }
 
@@ -60,8 +63,8 @@ export class BoardController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteBoard(
     @Param('id', ParseUUIDPipe) id: string,
-    @Req() req: Request,
+    @CurrentUser() user: AuthenticatedUser,
   ): Promise<void> {
-    await this.deleteBoardUseCase.execute(id, req.user['id']);
+    await this.deleteBoardUseCase.execute(id, user.id);
   }
 }
