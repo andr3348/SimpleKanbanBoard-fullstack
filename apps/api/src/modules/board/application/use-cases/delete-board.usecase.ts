@@ -17,7 +17,7 @@ export class DeleteBoardUseCase {
   ) {}
 
   async execute(boardId: string, requesterId: string): Promise<void> {
-    const board = await this.boardRepository.findbyId(boardId);
+    const board = await this.boardRepository.findById(boardId);
     if (!board) throw new NotFoundException('Board not found');
 
     if (board.ownerId !== requesterId)

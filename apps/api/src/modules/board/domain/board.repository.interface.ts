@@ -7,7 +7,7 @@ export interface CreateBoardInput {
 }
 
 export interface IBoardRepository {
-  findbyId(id: string): Promise<Board | null>;
+  findById(id: string): Promise<Board | null>;
   findAllByUser(userId: string): Promise<Board[]>;
   create(input: CreateBoardInput): Promise<Board>;
   delete(id: string): Promise<void>;

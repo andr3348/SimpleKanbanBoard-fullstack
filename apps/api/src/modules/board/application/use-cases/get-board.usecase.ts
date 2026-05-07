@@ -18,7 +18,7 @@ export class GetBoardUseCase {
   ) {}
 
   async execute(boardId: string, requesterId: string): Promise<Board> {
-    const board = await this.boardRepository.findbyId(boardId);
+    const board = await this.boardRepository.findById(boardId);
     if (!board) throw new NotFoundException('Board not found');
 
     // if board exists, check if requester is a member
