@@ -87,7 +87,7 @@ export class BoardController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async removeMember(
     @Param('id', ParseUUIDPipe) id: string,
-    @Param(':userId', ParseUUIDPipe) userId: string,
+    @Param('userId', ParseUUIDPipe) userId: string,
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<void> {
     await this.removeMemberUseCase.execute(id, user.id, userId);

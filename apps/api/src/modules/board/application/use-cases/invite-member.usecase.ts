@@ -25,11 +25,16 @@ export class InviteMemberUseCase {
     const board = await this.boardRepository.findById(boardId);
     if (!board) throw new NotFoundException('Board not found');
     if (board.ownerId !== requesterId)
-      throw new NotFoundException('Unauthorized');
+      throw new NotFoundException('Unauthorized'); // No other user can invite members then the board owner
 
     const invitee = await this.userRepository.findByEmail(email);
     if (!invitee) throw new NotFoundException('User not found');
 
+    // Verify owner cannot be invited as a member of its own board
+    if (board.ownerId === invitee.id)
+      throw new NotFoundException('Owner cannot be invited as a member');
+
+    // Verify the invitee is not already a member
     const alreadyMember = await this.boardRepository.isMember(
       boardId,
       invitee.id,
