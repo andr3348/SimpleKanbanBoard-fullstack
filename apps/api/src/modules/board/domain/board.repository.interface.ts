@@ -12,6 +12,8 @@ export interface IBoardRepository {
   create(input: CreateBoardInput): Promise<Board>;
   delete(id: string): Promise<void>;
   isMember(boardId: string, userId: string): Promise<boolean>;
+  addMember(boardId: string, userId: string): Promise<void>;
+  removeMember(boardId: string, userId: string): Promise<void>;
 }
 
 export const BOARD_REPOSITORY = Symbol('IBoardRepository');

@@ -52,6 +52,18 @@ export class BoardRepository implements IBoardRepository {
     await this.prisma.board.delete({ where: { id } });
   }
 
+  async addMember(boardId: string, userId: string): Promise<void> {
+    await this.prisma.boardMember.create({
+      data: { boardId, userId, role: 'MEMBER' },
+    });
+  }
+
+  async removeMember(boardId: string, userId: string): Promise<void> {
+    await this.prisma.boardMember.delete({
+      where: { boardId_userId: { boardId, userId } },
+    });
+  }
+
   // Checks if a user is a member of a board
   async isMember(boardId: string, userId: string): Promise<boolean> {
     const member = await this.prisma.boardMember.findUnique({

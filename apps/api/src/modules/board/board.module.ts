@@ -8,9 +8,12 @@ import { CreateBoardUseCase } from './application/use-cases/create-board.usecase
 import { GetBoardsUseCase } from './application/use-cases/get-boards.usecase';
 import { GetBoardUseCase } from './application/use-cases/get-board.usecase';
 import { DeleteBoardUseCase } from './application/use-cases/delete-board.usecase';
+import { UserModule } from '../user/user.module';
+import { InviteMemberUseCase } from './application/use-cases/invite-member.usecase';
+import { RemoveMembereUseCase } from './application/use-cases/remove-member.usecase';
 
 @Module({
-  imports: [PrismaModule, AuthModule],
+  imports: [PrismaModule, AuthModule, UserModule],
   controllers: [BoardController],
   providers: [
     { provide: BOARD_REPOSITORY, useClass: BoardRepository },
@@ -18,6 +21,8 @@ import { DeleteBoardUseCase } from './application/use-cases/delete-board.usecase
     GetBoardsUseCase,
     GetBoardUseCase,
     DeleteBoardUseCase,
+    InviteMemberUseCase,
+    RemoveMembereUseCase,
   ],
 })
 export class BoardModule {}

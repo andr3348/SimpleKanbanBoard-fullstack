@@ -21,6 +21,9 @@ import {
   type AuthenticatedUser,
   CurrentUser,
 } from 'src/common/decorators/current-user.decorator';
+import { InviteMemberUseCase } from '../application/use-cases/invite-member.usecase';
+import { RemoveMembereUseCase } from '../application/use-cases/remove-member.usecase';
+import { InviteMemberDto } from '../application/dtos/invite-member.dto';
 
 @Controller('boards')
 @UseGuards(JwtAuthGuard)
@@ -30,6 +33,8 @@ export class BoardController {
     private readonly getBoardsUseCase: GetBoardsUseCase,
     private readonly getBoardUseCase: GetBoardUseCase,
     private readonly deleteBoardUseCase: DeleteBoardUseCase,
+    private readonly inviteMemberUseCase: InviteMemberUseCase,
+    private readonly removeMemberUseCase: RemoveMembereUseCase,
   ) {}
 
   @Get()
@@ -66,5 +71,25 @@ export class BoardController {
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<void> {
     await this.deleteBoardUseCase.execute(id, user.id);
+  }
+
+  @Post(':id/members')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async inviteMember(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: InviteMemberDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ): Promise<void> {
+    await this.inviteMemberUseCase.execute(id, user.id, dto.email);
+  }
+
+  @Delete(':id/member/:userId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async removeMember(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param(':userId', ParseUUIDPipe) userId: string,
+    @CurrentUser() user: AuthenticatedUser,
+  ): Promise<void> {
+    await this.removeMemberUseCase.execute(id, user.id, userId);
   }
 }
