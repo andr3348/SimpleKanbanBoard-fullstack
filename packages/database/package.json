@@ -1,5 +1,5 @@
 {
-  "name": "database",
+  "name": "@repo/database",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,7 +8,7 @@
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "db:reset": "prisma migrate reset --force",
-    "build": "prisma generate"
+    "build": "prisma generate && tsc"
   },
   "keywords": [],
   "author": "",
@@ -21,10 +21,16 @@
     "pg": "^8.20.0"
   },
   "devDependencies": {
+    "@types/node": "^22.19.17",
     "@types/pg": "^8.20.0",
-    "prisma": "^7.8.0"
+    "prisma": "^7.8.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.2"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./dist/index.js"
+    }
   }
 }
