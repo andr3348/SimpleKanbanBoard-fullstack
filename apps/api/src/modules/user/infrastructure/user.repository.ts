@@ -5,7 +5,7 @@ import {
 } from '../domain/user.repository.interface';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { User } from '../domain/user.entity';
-import { User as PrismaUser } from 'src/generated/prisma/client';
+import { User as PrismaUser } from '@repo/database';
 
 @Injectable()
 export class UserRepository implements IUserRepository {

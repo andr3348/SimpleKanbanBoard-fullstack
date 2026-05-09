@@ -5,7 +5,7 @@ import {
 } from '../domain/board.repository.interface';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Board } from '../domain/board.entity';
-import { Board as PrismaBoard } from 'src/generated/prisma/client';
+import { Board as PrismaBoard } from '@repo/database';
 
 @Injectable()
 export class BoardRepository implements IBoardRepository {
