@@ -24,5 +24,6 @@ import { RemoveMembereUseCase } from './application/use-cases/remove-member.usec
     InviteMemberUseCase,
     RemoveMembereUseCase,
   ],
+  exports: [BOARD_REPOSITORY, GetBoardsUseCase],
 })
 export class BoardModule {}
