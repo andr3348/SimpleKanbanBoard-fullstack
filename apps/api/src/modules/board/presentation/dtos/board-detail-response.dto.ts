@@ -1,0 +1,66 @@
+import {
+  BoardDetail,
+  CardInBoard,
+  ColumnInBoard,
+} from '../../domain/board.repository.interface';
+
+class CardInBoardDto {
+  id: string;
+  title: string;
+  description: string | null;
+  position: number;
+  columnId: string;
+  assigneeId: string | null;
+  createdAt: Date;
+
+  static from(card: CardInBoard): CardInBoardDto {
+    const dto = new CardInBoardDto();
+    dto.id = card.id;
+    dto.title = card.title;
+    dto.description = card.description;
+    dto.position = card.position;
+    dto.columnId = card.columnId;
+    dto.assigneeId = card.assigneeId;
+    dto.createdAt = card.createdAt;
+    return dto;
+  }
+}
+
+class ColumnInBoardDto {
+  id: string;
+  title: string;
+  position: number;
+  boardId: string;
+  cards: CardInBoardDto[];
+
+  static from(column: ColumnInBoard): ColumnInBoardDto {
+    const dto = new ColumnInBoardDto();
+    dto.id = column.id;
+    dto.title = column.title;
+    dto.position = column.position;
+    dto.boardId = column.boardId;
+    dto.cards = column.cards.map(CardInBoardDto.from);
+    return dto;
+  }
+}
+
+export class BoardDetailResponseDto {
+  id: string;
+  title: string;
+  description: string | null;
+  ownerId: string;
+  createdAt: Date;
+  columns: ColumnInBoardDto[];
+
+  static from(detail: BoardDetail): BoardDetailResponseDto {
+    const { board, columns } = detail;
+    const dto = new BoardDetailResponseDto();
+    dto.id = board.id;
+    dto.title = board.title;
+    dto.description = board.description;
+    dto.ownerId = board.ownerId;
+    dto.createdAt = board.createdAt;
+    dto.columns = columns.map(ColumnInBoardDto.from);
+    return dto;
+  }
+}

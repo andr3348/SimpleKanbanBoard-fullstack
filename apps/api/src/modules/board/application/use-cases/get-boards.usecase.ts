@@ -1,9 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
   BOARD_REPOSITORY,
+  BoardWithRole,
   type IBoardRepository,
 } from '../../domain/board.repository.interface';
-import { Board } from '../../domain/board.entity';
 
 @Injectable()
 export class GetBoardsUseCase {
@@ -12,7 +12,7 @@ export class GetBoardsUseCase {
     private readonly boardRepository: IBoardRepository,
   ) {}
 
-  async execute(userId: string): Promise<Board[]> {
+  async execute(userId: string): Promise<BoardWithRole[]> {
     return this.boardRepository.findAllByUser(userId);
   }
 }

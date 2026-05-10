@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import {
   BOARD_REPOSITORY,
+  BoardDetail,
   type IBoardRepository,
 } from '../../domain/board.repository.interface';
 import { Board } from '../../domain/board.entity';
@@ -17,8 +18,8 @@ export class GetBoardUseCase {
     private readonly boardRepository: IBoardRepository,
   ) {}
 
-  async execute(boardId: string, requesterId: string): Promise<Board> {
-    const board = await this.boardRepository.findById(boardId);
+  async execute(boardId: string, requesterId: string): Promise<BoardDetail> {
+    const board = await this.boardRepository.findByIdWithDetails(boardId);
     if (!board) throw new NotFoundException('Board not found');
 
     // if board exists, check if requester is a member

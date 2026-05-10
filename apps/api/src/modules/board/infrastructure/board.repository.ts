@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import {
+  BoardDetail,
+  BoardRole,
+  BoardWithRole,
   CreateBoardInput,
   IBoardRepository,
 } from '../domain/board.repository.interface';
@@ -18,16 +21,70 @@ export class BoardRepository implements IBoardRepository {
     return this.toEntity(row);
   }
 
-  async findAllByUser(userId: string): Promise<Board[]> {
+  async findByIdWithDetails(id: string): Promise<BoardDetail | null> {
+    const row = await this.prisma.board.findUnique({
+      where: { id },
+      include: {
+        columns: {
+          orderBy: { position: 'asc' },
+          include: {
+            cards: {
+              orderBy: { position: 'asc' },
+            },
+          },
+        },
+      },
+    });
+
+    if (!row) return null;
+
+    return {
+      board: this.toEntity(row),
+      columns: row.columns.map((col) => ({
+        id: col.id,
+        title: col.title,
+        position: col.position,
+        boardId: col.boardId,
+        cards: col.cards.map((card) => ({
+          id: card.id,
+          title: card.title,
+          description: card.description,
+          position: card.position,
+          columnId: card.columnId,
+          assigneeId: card.assigneeId,
+          createdAt: card.createdAt,
+        })),
+      })),
+    };
+  }
+
+  async findAllByUser(userId: string): Promise<BoardWithRole[]> {
     const rows = await this.prisma.board.findMany({
       where: {
         // OR statement to find boards where user is owner or member
         OR: [{ ownerId: userId }, { members: { some: { userId } } }],
       },
+      include: {
+        members: {
+          where: { userId },
+          select: { role: true },
+        },
+      },
       orderBy: { createdAt: 'desc' },
     });
 
-    return rows.map((r) => this.toEntity(r));
+    return rows.map((r) => {
+      const isOwner = r.ownerId === userId;
+      const memberRole = r.members[0]?.role; // always exists since owner is also a member
+
+      const role: BoardRole = isOwner
+        ? 'owner'
+        : memberRole === 'ADMIN'
+          ? 'admin'
+          : 'member';
+
+      return { board: this.toEntity(r), role };
+    });
   }
 
   async create(input: CreateBoardInput): Promise<Board> {
