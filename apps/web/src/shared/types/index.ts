@@ -1,3 +1,6 @@
+export type { User, Board, Column, Card, BoardRole } from "@repo/database";
+
+// frontend-only types
 export interface BoardWithRole {
   id: string;
   title: string;
