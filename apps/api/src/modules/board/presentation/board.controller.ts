@@ -15,7 +15,10 @@ import { CreateBoardUseCase } from '../application/use-cases/create-board.usecas
 import { GetBoardsUseCase } from '../application/use-cases/get-boards.usecase';
 import { GetBoardUseCase } from '../application/use-cases/get-board.usecase';
 import { DeleteBoardUseCase } from '../application/use-cases/delete-board.usecase';
-import { BoardResponseDto } from './dtos/board-response.dto';
+import {
+  BoardListItemResponseDto,
+  BoardResponseDto,
+} from './dtos/board-response.dto';
 import { CreateBoardDto } from '../application/dtos/create-board.dto';
 import {
   type AuthenticatedUser,
@@ -24,6 +27,7 @@ import {
 import { InviteMemberUseCase } from '../application/use-cases/invite-member.usecase';
 import { RemoveMembereUseCase } from '../application/use-cases/remove-member.usecase';
 import { InviteMemberDto } from '../application/dtos/invite-member.dto';
+import { BoardDetailResponseDto } from './dtos/board-detail-response.dto';
 
 @Controller('boards')
 @UseGuards(JwtAuthGuard)
@@ -40,18 +44,20 @@ export class BoardController {
   @Get()
   async getBoards(
     @CurrentUser() user: AuthenticatedUser,
-  ): Promise<BoardResponseDto[]> {
+  ): Promise<BoardListItemResponseDto[]> {
     const board = await this.getBoardsUseCase.execute(user.id);
-    return board.map((b) => BoardResponseDto.fromEntity(b));
+    return board.map(({ board, role }) =>
+      BoardListItemResponseDto.fromBoardWithRole(board, role),
+    );
   }
 
   @Get(':id')
   async getBoard(
     @Param('id', ParseUUIDPipe) id: string,
     @CurrentUser() user: AuthenticatedUser,
-  ): Promise<BoardResponseDto> {
+  ): Promise<BoardDetailResponseDto> {
     const board = await this.getBoardUseCase.execute(id, user.id);
-    return BoardResponseDto.fromEntity(board);
+    return BoardDetailResponseDto.from(board);
   }
 
   @Post()
