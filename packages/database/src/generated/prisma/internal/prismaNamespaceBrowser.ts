@@ -90,6 +90,7 @@ export const BoardScalarFieldEnum = {
   title: 'title',
   description: 'description',
   createdAt: 'createdAt',
+  coverUrl: 'coverUrl',
   ownerId: 'ownerId'
 } as const
 
