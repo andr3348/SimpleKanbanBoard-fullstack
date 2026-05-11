@@ -1,4 +1,4 @@
-import { IsOptional, IsString, MinLength } from 'class-validator';
+import { IsOptional, IsString, IsUrl, MinLength } from 'class-validator';
 
 export class CreateBoardDto {
   @IsString()
@@ -8,4 +8,8 @@ export class CreateBoardDto {
   @IsString()
   @IsOptional()
   description?: string;
+
+  @IsUrl()
+  @IsOptional()
+  coverUrl?: string;
 }

@@ -9,6 +9,7 @@ export interface BoardWithRole {
 export interface CreateBoardInput {
   title: string;
   description?: string;
+  coverUrl?: string;
   ownerId: string;
 }
 

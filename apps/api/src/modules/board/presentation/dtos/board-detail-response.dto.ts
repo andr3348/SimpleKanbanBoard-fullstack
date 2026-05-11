@@ -50,6 +50,7 @@ export class BoardDetailResponseDto {
   description: string | null;
   ownerId: string;
   createdAt: Date;
+  coverUrl: string | null;
   columns: ColumnInBoardDto[];
 
   static from(detail: BoardDetail): BoardDetailResponseDto {
@@ -60,6 +61,7 @@ export class BoardDetailResponseDto {
     dto.description = board.description;
     dto.ownerId = board.ownerId;
     dto.createdAt = board.createdAt;
+    dto.coverUrl = board.coverUrl;
     dto.columns = columns.map(ColumnInBoardDto.from);
     return dto;
   }

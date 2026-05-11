@@ -92,6 +92,7 @@ export class BoardRepository implements IBoardRepository {
       data: {
         title: input.title,
         description: input.description,
+        coverUrl: input.coverUrl,
         ownerId: input.ownerId,
         members: {
           create: {
@@ -138,6 +139,7 @@ export class BoardRepository implements IBoardRepository {
       description: row.description,
       ownerId: row.ownerId,
       createdAt: row.createdAt,
+      coverUrl: row.coverUrl,
     });
   }
 }
