@@ -20,8 +20,6 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@repo/database": "*",
-    "@repo/types": "*",
     "@nestjs/common": "^11.0.1",
     "@nestjs/core": "^11.0.1",
     "@nestjs/jwt": "^11.0.2",
@@ -29,6 +27,9 @@
     "@nestjs/platform-express": "^11.0.1",
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
+    "@repo/database": "*",
+    "@repo/types": "*",
+    "axios": "^1.16.0",
     "bcrypt": "^6.0.0",
     "class-validator": "^0.15.1",
     "cookie-parser": "^1.4.7",

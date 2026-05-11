@@ -7,6 +7,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { BoardModule } from './modules/board/board.module';
 import { ColumnModule } from './modules/column/column.module';
 import { CardModule } from './modules/card/card.module';
+import { UnsplashModule } from './modules/unsplash/unsplash.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { CardModule } from './modules/card/card.module';
     BoardModule,
     ColumnModule,
     CardModule,
+    UnsplashModule,
   ],
   controllers: [AppController],
   providers: [AppService],
