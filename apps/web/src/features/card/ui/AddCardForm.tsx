@@ -28,17 +28,19 @@ export function AddCardForm({ columnId, boardId }: Props) {
 
   if (!open) {
     return (
-      <button
-        onClick={() => setOpen(true)}
-        className="flex items-center gap-2 w-full p-2 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/60 rounded-lg transition-colors m-1"
-      >
-        <Plus className="w-3.5 h-3.5" /> Add card
-      </button>
+      <div className="px-2 py-2">
+        <button
+          onClick={() => setOpen(true)}
+          className="flex items-center gap-2 w-full text-xs text-muted-foreground hover:text-foreground hover:bg-muted/60 rounded-lg transition-colors px-2 py-1"
+        >
+          <Plus className="w-3.5 h-3.5" /> Add card
+        </button>
+      </div>
     );
   }
 
   return (
-    <div className="p-2 space-y-2">
+    <div className="px-2 py-2 space-y-2">
       <Input
         value={title}
         onChange={(e) => setTitle(e.target.value)}
