@@ -9,14 +9,51 @@ import { Button } from "@/components/ui/button";
 import { Plus, Lock, Users } from "lucide-react";
 import type { BoardWithRole } from "@/shared/types";
 
-export function BoardList() {
+function BoardCard({ board }: { board: BoardWithRole }) {
   const router = useRouter();
+
+  return (
+    <button
+      onClick={() => router.push(`/boards/${board.id}`)}
+      className="group relative h-32 rounded-xl overflow-hidden text-left shadow-sm hover:shadow-md transition-shadow"
+    >
+      {board.coverUrl ? (
+        <img
+          src={board.coverUrl}
+          alt={board.title}
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+      ) : (
+        <div className="absolute inset-0 bg-gradient-to-br from-violet-500 to-indigo-600" />
+      )}
+      <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors" />
+      <div className="absolute inset-0 p-3 flex flex-col justify-between">
+        <span className="text-white font-semibold text-sm line-clamp-2">
+          {board.title}
+        </span>
+        <span className="text-white/70 text-xs capitalize flex items-center gap-1">
+          {board.role === "owner" ? (
+            <Lock className="w-3 h-3" />
+          ) : (
+            <Users className="w-3 h-3" />
+          )}
+          {board.role}
+        </span>
+      </div>
+    </button>
+  );
+}
+
+export function BoardList() {
   const [open, setOpen] = useState(false);
 
   const { data: boards = [], isLoading } = useQuery({
     queryKey: ["boards"],
     queryFn: boardApi.getAll,
   });
+
+  const ownedBoards = boards.filter((b) => b.role === "owner");
+  const memberBoards = boards.filter((b) => b.role !== "owner");
 
   if (isLoading)
     return <div className="p-8 text-muted-foreground">Loading boards...</div>;
@@ -30,39 +67,31 @@ export function BoardList() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-        {boards.map((item) => (
-          <button
-            key={item.id}
-            onClick={() => router.push(`/boards/${item.id}`)}
-            className="group relative h-32 rounded-xl overflow-hidden text-left shadow-sm hover:shadow-md transition-shadow"
-          >
-            {item.coverUrl ? (
-              <img
-                src={item.coverUrl}
-                alt={item.title}
-                className="absolute inset-0 w-full h-full object-cover"
-              />
-            ) : (
-              <div className="absolute inset-0 bg-gradient-to-br from-violet-500 to-indigo-600" />
-            )}
-            <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors" />
-            <div className="absolute inset-0 p-3 flex flex-col justify-between">
-              <span className="text-white font-semibold text-sm line-clamp-2">
-                {item.title}
-              </span>
-              <span className="text-white/70 text-xs capitalize flex items-center gap-1">
-                {item.role === "owner" ? (
-                  <Lock className="w-3 h-3" />
-                ) : (
-                  <Users className="w-3 h-3" />
-                )}
-                {item.role}
-              </span>
-            </div>
-          </button>
-        ))}
-      </div>
+      {ownedBoards.length > 0 && (
+        <div className="mb-8">
+          <h2 className="text-lg font-semibold mb-4">Owned</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {ownedBoards.map((board) => (
+              <BoardCard key={board.id} board={board} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {memberBoards.length > 0 && (
+        <div className="mb-8">
+          <h2 className="text-lg font-semibold mb-4">Member</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {memberBoards.map((board) => (
+              <BoardCard key={board.id} board={board} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {boards.length === 0 && (
+        <div className="text-muted-foreground">No boards yet.</div>
+      )}
 
       <CreateBoardModal open={open} onOpenChange={setOpen} />
     </div>
