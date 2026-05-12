@@ -118,7 +118,22 @@ export function BoardView({ boardId }: { boardId: string }) {
     <div className="flex flex-col h-screen overflow-hidden bg-background">
       <BoardHeader board={board} boardId={boardId} />
 
-      <main className="flex-1 overflow-x-auto overflow-y-hidden">
+      <main
+        className="flex-1 overflow-x-auto overflow-y-hidden relative"
+        style={{
+          backgroundImage: board.coverUrl
+            ? `url(${board.coverUrl})`
+            : undefined,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundAttachment: "fixed",
+        }}
+      >
+        {/* Overlay to make content readable over background */}
+        {board.coverUrl && (
+          <div className="absolute inset-0 bg-black/30 pointer-events-none" />
+        )}
+
         <DndContext
           sensors={sensors}
           collisionDetection={closestCorners}
@@ -126,7 +141,7 @@ export function BoardView({ boardId }: { boardId: string }) {
           onDragOver={handleDragOver}
           onDragEnd={handleDragEnd}
         >
-          <div className="flex gap-3 h-full items-start p-4 w-max">
+          <div className="flex gap-3 h-full items-start p-4 w-max relative z-10">
             {board.columns.map((col) => (
               <BoardColumn key={col.id} column={col} boardId={boardId} />
             ))}

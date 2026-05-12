@@ -35,5 +35,6 @@ export interface BoardDetail {
   description: string | null;
   ownerId: string;
   createdAt: string;
+  coverUrl: string | null;
   columns: ColumnInBoard[];
 }
