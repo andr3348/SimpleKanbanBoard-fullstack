@@ -11,7 +11,7 @@ http.interceptors.response.use(
   (res) => res,
   (error) => {
     if (error.response?.status === 401 && typeof window !== "undefined") {
-      window.location.href = "login";
+      window.location.href = "/login";
     }
     return Promise.reject(error);
   },

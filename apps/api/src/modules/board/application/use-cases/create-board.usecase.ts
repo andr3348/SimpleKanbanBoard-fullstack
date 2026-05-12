@@ -17,6 +17,7 @@ export class CreateBoardUseCase {
     return this.boardRepository.create({
       title: dto.title,
       description: dto.description,
+      coverUrl: dto.coverUrl,
       ownerId,
     });
   }

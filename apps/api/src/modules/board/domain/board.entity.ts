@@ -4,6 +4,7 @@ export interface BoardProps {
   description: string | null;
   ownerId: string;
   createdAt: Date;
+  coverUrl: string | null;
 }
 
 export class Board {
@@ -27,5 +28,9 @@ export class Board {
 
   get createdAt(): Date {
     return this.props.createdAt;
+  }
+
+  get coverUrl(): string | null {
+    return this.props.coverUrl;
   }
 }

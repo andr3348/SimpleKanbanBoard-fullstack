@@ -5,6 +5,7 @@ import { BoardController } from './presentation/board.controller';
 import { BOARD_REPOSITORY } from './domain/board.repository.interface';
 import { BoardRepository } from './infrastructure/board.repository';
 import { CreateBoardUseCase } from './application/use-cases/create-board.usecase';
+import { UpdateBoardUseCase } from './application/use-cases/update-board.usecase';
 import { GetBoardsUseCase } from './application/use-cases/get-boards.usecase';
 import { GetBoardUseCase } from './application/use-cases/get-board.usecase';
 import { DeleteBoardUseCase } from './application/use-cases/delete-board.usecase';
@@ -18,6 +19,7 @@ import { RemoveMembereUseCase } from './application/use-cases/remove-member.usec
   providers: [
     { provide: BOARD_REPOSITORY, useClass: BoardRepository },
     CreateBoardUseCase,
+    UpdateBoardUseCase,
     GetBoardsUseCase,
     GetBoardUseCase,
     DeleteBoardUseCase,

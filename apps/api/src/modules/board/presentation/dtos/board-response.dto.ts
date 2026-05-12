@@ -7,6 +7,7 @@ export class BoardResponseDto {
   description: string | null;
   ownerId: string;
   createdAt: Date;
+  coverUrl: string | null;
 
   static fromEntity(board: Board): BoardResponseDto {
     const dto = new BoardResponseDto();
@@ -15,6 +16,7 @@ export class BoardResponseDto {
     dto.description = board.description;
     dto.ownerId = board.ownerId;
     dto.createdAt = board.createdAt;
+    dto.coverUrl = board.coverUrl;
     return dto;
   }
 }
@@ -25,6 +27,7 @@ export class BoardListItemResponseDto {
   description: string | null;
   ownerId: string;
   createdAt: Date;
+  coverUrl: string | null;
   role: BoardRole;
 
   static fromBoardWithRole(
@@ -37,6 +40,7 @@ export class BoardListItemResponseDto {
     dto.description = board.description;
     dto.ownerId = board.ownerId;
     dto.createdAt = board.createdAt;
+    dto.coverUrl = board.coverUrl;
     dto.role = role;
     return dto;
   }

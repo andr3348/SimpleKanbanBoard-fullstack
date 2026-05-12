@@ -7,6 +7,15 @@ export interface BoardWithRole {
   description: string | null;
   ownerId: string;
   createdAt: string;
+  coverUrl: string | null;
+  role: "owner" | "admin" | "member";
+}
+
+export interface BoardMember {
+  id: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
   role: "owner" | "admin" | "member";
 }
 
@@ -34,5 +43,8 @@ export interface BoardDetail {
   description: string | null;
   ownerId: string;
   createdAt: string;
+  coverUrl: string | null;
   columns: ColumnInBoard[];
+  members: BoardMember[];
+  userRole: "owner" | "admin" | "member";
 }

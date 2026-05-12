@@ -8,6 +8,7 @@ import { PrismaModule } from 'src/prisma/prisma.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from './presentation/auth.controller';
+import { TestAuthController } from './presentation/test-auth.controller';
 import { JwtService } from './domain/services/jwt.service';
 import { NestJsJwtService } from './infrastructure/services/nestjs-jwt.service';
 import { JwtStrategy } from './infrastructure/strategies/jwt.strategy';
@@ -23,7 +24,7 @@ import { JwtAuthGuard } from './infrastructure/guards/jwt-auth.guard';
       signOptions: { expiresIn: '24h' },
     }),
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, TestAuthController],
   providers: [
     { provide: HashingService, useClass: BcryptHashingService },
     { provide: JwtService, useClass: NestJsJwtService },
@@ -32,6 +33,6 @@ import { JwtAuthGuard } from './infrastructure/guards/jwt-auth.guard';
     RegisterUseCase,
     LoginUseCase,
   ],
-  exports: [JwtAuthGuard, JwtStrategy], // exported for use in other modules
+  exports: [JwtAuthGuard, JwtStrategy, JwtService], // exported for use in other modules
 })
 export class AuthModule {}
