@@ -11,6 +11,14 @@ export interface BoardWithRole {
   role: "owner" | "admin" | "member";
 }
 
+export interface BoardMember {
+  id: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  role: "owner" | "admin" | "member";
+}
+
 export interface CardInBoard {
   id: string;
   title: string;
@@ -37,4 +45,6 @@ export interface BoardDetail {
   createdAt: string;
   coverUrl: string | null;
   columns: ColumnInBoard[];
+  members: BoardMember[];
+  userRole: "owner" | "admin" | "member";
 }

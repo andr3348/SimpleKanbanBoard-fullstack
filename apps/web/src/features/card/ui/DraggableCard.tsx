@@ -5,15 +5,16 @@ import { CSS } from "@dnd-kit/utilities";
 import { useState } from "react";
 import { GripVertical, User } from "lucide-react";
 import { CardDetailSheet } from "./CardDetailSheet";
-import type { CardInBoard } from "@/shared/types";
+import type { CardInBoard, BoardMember } from "@/shared/types";
 
 interface Props {
   card: CardInBoard;
   columnId: string;
   boardId: string;
+  members: BoardMember[];
 }
 
-export function DraggableCard({ card, columnId, boardId }: Props) {
+export function DraggableCard({ card, columnId, boardId, members }: Props) {
   const [open, setOpen] = useState(false);
 
   const {
@@ -61,7 +62,10 @@ export function DraggableCard({ card, columnId, boardId }: Props) {
             {card.assigneeId && (
               <div className="flex items-center gap-1 mt-2">
                 <User className="w-3 h-3 text-muted-foreground" />
-                <span className="text-xs text-muted-foreground">Assigned</span>
+                <span className="text-xs text-muted-foreground truncate">
+                  {members.find((m) => m.userId === card.assigneeId)
+                    ?.userName || "Assigned"}
+                </span>
               </div>
             )}
           </div>
@@ -72,6 +76,7 @@ export function DraggableCard({ card, columnId, boardId }: Props) {
         card={card}
         columnId={columnId}
         boardId={boardId}
+        members={members}
         open={open}
         onOpenChange={setOpen}
       />

@@ -6,7 +6,8 @@ import { useState } from "react";
 import { boardApi } from "../api/board.api";
 import { CreateBoardModal } from "./CreateBoardModal";
 import { Button } from "@/components/ui/button";
-import { Plus, Lock, Users } from "lucide-react";
+import { Plus, Lock, Users, LogOut } from "lucide-react";
+import { http } from "@/shared/api/http";
 import type { BoardWithRole } from "@/shared/types";
 
 function BoardCard({ board }: { board: BoardWithRole }) {
@@ -45,12 +46,23 @@ function BoardCard({ board }: { board: BoardWithRole }) {
 }
 
 export function BoardList() {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
 
   const { data: boards = [], isLoading } = useQuery({
     queryKey: ["boards"],
     queryFn: boardApi.getAll,
   });
+
+  const handleLogout = async () => {
+    // Clear the auth cookie by calling a logout endpoint or just clearing local state
+    try {
+      await http.post("/auth/logout", {});
+    } catch {
+      // Even if logout fails, redirect to login
+    }
+    router.push("/login");
+  };
 
   const ownedBoards = boards.filter((b) => b.role === "owner");
   const memberBoards = boards.filter((b) => b.role !== "owner");
@@ -62,9 +74,14 @@ export function BoardList() {
     <div className="container mx-auto py-8 px-4">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-semibold">My Boards</h1>
-        <Button onClick={() => setOpen(true)}>
-          <Plus className="w-4 h-4 mr-2" /> New board
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button onClick={() => setOpen(true)}>
+            <Plus className="w-4 h-4 mr-2" /> New board
+          </Button>
+          <Button variant="outline" onClick={handleLogout}>
+            <LogOut className="w-4 h-4 mr-2" /> Logout
+          </Button>
+        </div>
       </div>
 
       {ownedBoards.length > 0 && (

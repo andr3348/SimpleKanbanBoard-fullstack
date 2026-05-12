@@ -10,6 +10,11 @@ export const boardApi = {
   create: (data: { title: string; description?: string; coverUrl?: string }) =>
     http.post<BoardWithRole>("/boards", data).then((r) => r.data),
 
+  update: (
+    id: string,
+    data: { title?: string; description?: string; coverUrl?: string | null },
+  ) => http.patch<BoardWithRole>(`/boards/${id}`, data).then((r) => r.data),
+
   delete: (id: string) => http.delete(`/boards/${id}`),
 
   invite: (boardId: string, email: string) =>

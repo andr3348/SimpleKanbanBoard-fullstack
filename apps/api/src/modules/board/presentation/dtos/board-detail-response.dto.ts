@@ -2,6 +2,7 @@ import {
   BoardDetail,
   CardInBoard,
   ColumnInBoard,
+  BoardMemberInfo,
 } from '../../domain/board.repository.interface';
 
 class CardInBoardDto {
@@ -44,6 +45,24 @@ class ColumnInBoardDto {
   }
 }
 
+class BoardMemberDto {
+  id: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  role: string;
+
+  static from(member: BoardMemberInfo): BoardMemberDto {
+    const dto = new BoardMemberDto();
+    dto.id = member.id;
+    dto.userId = member.userId;
+    dto.userName = member.userName;
+    dto.userEmail = member.userEmail;
+    dto.role = member.role;
+    return dto;
+  }
+}
+
 export class BoardDetailResponseDto {
   id: string;
   title: string;
@@ -52,9 +71,11 @@ export class BoardDetailResponseDto {
   createdAt: Date;
   coverUrl: string | null;
   columns: ColumnInBoardDto[];
+  members: BoardMemberDto[];
+  userRole: string;
 
   static from(detail: BoardDetail): BoardDetailResponseDto {
-    const { board, columns } = detail;
+    const { board, columns, members, userRole } = detail;
     const dto = new BoardDetailResponseDto();
     dto.id = board.id;
     dto.title = board.title;
@@ -63,6 +84,8 @@ export class BoardDetailResponseDto {
     dto.createdAt = board.createdAt;
     dto.coverUrl = board.coverUrl;
     dto.columns = columns.map(ColumnInBoardDto.from);
+    dto.members = members.map(BoardMemberDto.from);
+    dto.userRole = userRole;
     return dto;
   }
 }

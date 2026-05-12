@@ -18,14 +18,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import type { ColumnInBoard } from "@/shared/types";
+import type { ColumnInBoard, BoardMember } from "@/shared/types";
 
 interface Props {
   column: ColumnInBoard;
   boardId: string;
+  members: BoardMember[];
 }
 
-export function BoardColumn({ column, boardId }: Props) {
+export function BoardColumn({ column, boardId, members }: Props) {
   const queryClient = useQueryClient();
   const [renaming, setRenaming] = useState(false);
   const [title, setTitle] = useState(column.title);
@@ -116,6 +117,7 @@ export function BoardColumn({ column, boardId }: Props) {
               card={card}
               columnId={column.id}
               boardId={boardId}
+              members={members}
             />
           ))}
         </div>

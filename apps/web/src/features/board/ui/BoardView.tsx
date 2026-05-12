@@ -143,7 +143,12 @@ export function BoardView({ boardId }: { boardId: string }) {
         >
           <div className="flex gap-3 h-full items-start p-4 w-max relative z-10">
             {board.columns.map((col) => (
-              <BoardColumn key={col.id} column={col} boardId={boardId} />
+              <BoardColumn
+                key={col.id}
+                column={col}
+                boardId={boardId}
+                members={board.members}
+              />
             ))}
             <AddColumnForm boardId={boardId} />
           </div>

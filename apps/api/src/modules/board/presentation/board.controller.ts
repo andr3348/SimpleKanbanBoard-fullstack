@@ -7,11 +7,13 @@ import {
   HttpStatus,
   Param,
   ParseUUIDPipe,
+  Patch,
   Post,
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/modules/auth/infrastructure/guards/jwt-auth.guard';
 import { CreateBoardUseCase } from '../application/use-cases/create-board.usecase';
+import { UpdateBoardUseCase } from '../application/use-cases/update-board.usecase';
 import { GetBoardsUseCase } from '../application/use-cases/get-boards.usecase';
 import { GetBoardUseCase } from '../application/use-cases/get-board.usecase';
 import { DeleteBoardUseCase } from '../application/use-cases/delete-board.usecase';
@@ -20,6 +22,7 @@ import {
   BoardResponseDto,
 } from './dtos/board-response.dto';
 import { CreateBoardDto } from '../application/dtos/create-board.dto';
+import { UpdateBoardDto } from '../application/dtos/update-board.dto';
 import {
   type AuthenticatedUser,
   CurrentUser,
@@ -34,6 +37,7 @@ import { BoardDetailResponseDto } from './dtos/board-detail-response.dto';
 export class BoardController {
   constructor(
     private readonly createBoardUseCase: CreateBoardUseCase,
+    private readonly updateBoardUseCase: UpdateBoardUseCase,
     private readonly getBoardsUseCase: GetBoardsUseCase,
     private readonly getBoardUseCase: GetBoardUseCase,
     private readonly deleteBoardUseCase: DeleteBoardUseCase,
@@ -67,6 +71,16 @@ export class BoardController {
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<BoardResponseDto> {
     const board = await this.createBoardUseCase.execute(dto, user.id);
+    return BoardResponseDto.fromEntity(board);
+  }
+
+  @Patch(':id')
+  async updateBoard(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: UpdateBoardDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ): Promise<BoardResponseDto> {
+    const board = await this.updateBoardUseCase.execute(id, dto, user.id);
     return BoardResponseDto.fromEntity(board);
   }
 

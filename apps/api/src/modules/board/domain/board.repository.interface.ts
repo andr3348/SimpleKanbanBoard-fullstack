@@ -13,6 +13,12 @@ export interface CreateBoardInput {
   ownerId: string;
 }
 
+export interface UpdateBoardInput {
+  title?: string;
+  description?: string;
+  coverUrl?: string;
+}
+
 export interface CardInBoard {
   id: string;
   title: string;
@@ -31,16 +37,27 @@ export interface ColumnInBoard {
   cards: CardInBoard[];
 }
 
+export interface BoardMemberInfo {
+  id: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  role: BoardRole;
+}
+
 export interface BoardDetail {
   board: Board;
   columns: ColumnInBoard[];
+  members: BoardMemberInfo[];
+  userRole: BoardRole;
 }
 
 export interface IBoardRepository {
   findById(id: string): Promise<Board | null>;
-  findByIdWithDetails(id: string): Promise<BoardDetail | null>;
+  findByIdWithDetails(id: string, userId: string): Promise<BoardDetail | null>;
   findAllByUser(userId: string): Promise<BoardWithRole[]>;
   create(input: CreateBoardInput): Promise<Board>;
+  update(id: string, input: UpdateBoardInput): Promise<Board>;
   delete(id: string): Promise<void>;
   isMember(boardId: string, userId: string): Promise<boolean>;
   addMember(boardId: string, userId: string): Promise<void>;

@@ -4,6 +4,7 @@ import {
   BoardRole,
   BoardWithRole,
   CreateBoardInput,
+  UpdateBoardInput,
   IBoardRepository,
 } from '../domain/board.repository.interface';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -21,7 +22,10 @@ export class BoardRepository implements IBoardRepository {
     return this.toEntity(row);
   }
 
-  async findByIdWithDetails(id: string): Promise<BoardDetail | null> {
+  async findByIdWithDetails(
+    id: string,
+    userId: string,
+  ): Promise<BoardDetail | null> {
     const row = await this.prisma.board.findUnique({
       where: { id },
       include: {
@@ -33,10 +37,26 @@ export class BoardRepository implements IBoardRepository {
             },
           },
         },
+        members: {
+          include: {
+            user: {
+              select: { id: true, name: true, email: true },
+            },
+          },
+        },
       },
     });
 
     if (!row) return null;
+
+    // Calculate user's role
+    const isOwner = row.ownerId === userId;
+    const memberRole = row.members.find((m) => m.userId === userId)?.role;
+    const userRole: 'owner' | 'admin' | 'member' = isOwner
+      ? 'owner'
+      : memberRole === 'ADMIN'
+        ? 'admin'
+        : 'member';
 
     return {
       board: this.toEntity(row),
@@ -55,6 +75,14 @@ export class BoardRepository implements IBoardRepository {
           createdAt: card.createdAt,
         })),
       })),
+      members: row.members.map((m) => ({
+        id: m.id,
+        userId: m.user.id,
+        userName: m.user.name,
+        userEmail: m.user.email,
+        role: m.role === 'ADMIN' ? 'admin' : 'member',
+      })),
+      userRole,
     };
   }
 
@@ -100,6 +128,21 @@ export class BoardRepository implements IBoardRepository {
             role: 'ADMIN',
           },
         },
+      },
+    });
+
+    return this.toEntity(row);
+  }
+
+  async update(id: string, input: UpdateBoardInput): Promise<Board> {
+    const row = await this.prisma.board.update({
+      where: { id },
+      data: {
+        ...(input.title !== undefined && { title: input.title }),
+        ...(input.description !== undefined && {
+          description: input.description,
+        }),
+        ...(input.coverUrl !== undefined && { coverUrl: input.coverUrl }),
       },
     });
 

@@ -17,7 +17,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import type { CardInBoard } from "@/shared/types";
+import { Select } from "@/components/ui/select";
+import type { CardInBoard, BoardMember } from "@/shared/types";
 
 const schema = z.object({
   title: z.string().min(1),
@@ -29,6 +30,7 @@ interface Props {
   card: CardInBoard;
   columnId: string;
   boardId: string;
+  members: BoardMember[];
   open: boolean;
   onOpenChange: (v: boolean) => void;
 }
@@ -37,6 +39,7 @@ export function CardDetailSheet({
   card,
   columnId,
   boardId,
+  members,
   open,
   onOpenChange,
 }: Props) {
@@ -56,6 +59,14 @@ export function CardDetailSheet({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["board", boardId] });
       onOpenChange(false);
+    },
+  });
+
+  const assigneeMutation = useMutation({
+    mutationFn: (assigneeId: string | null) =>
+      cardApi.update(columnId, card.id, { assigneeId }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["board", boardId] });
     },
   });
 
@@ -90,6 +101,25 @@ export function CardDetailSheet({
                 className="w-full rounded-md border bg-background px-3 py-2 text-sm resize-none outline-none focus:ring-2 focus:ring-ring"
                 placeholder="Add a description..."
               />
+            </div>
+
+            <div className="space-y-1">
+              <Label>Assign to</Label>
+              <Select
+                value={card.assigneeId ?? ""}
+                onChange={(e) =>
+                  assigneeMutation.mutate(
+                    e.target.value === "" ? null : e.target.value,
+                  )
+                }
+              >
+                <option value="">Unassigned</option>
+                {members.map((member) => (
+                  <option key={member.userId} value={member.userId}>
+                    {member.userName}
+                  </option>
+                ))}
+              </Select>
             </div>
 
             <div className="flex gap-2">

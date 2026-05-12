@@ -2,11 +2,13 @@
 
 import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, FileText, Users, Trash2 } from "lucide-react";
+import { ArrowLeft, FileText, Users, Trash2, Image } from "lucide-react";
 import dynamic from "next/dynamic";
+import { useState } from "react";
 import { boardApi } from "../api/board.api";
 import { Button } from "@/components/ui/button";
 import { BoardReport } from "./BoardReport";
+import { EditBoardCoverModal } from "./EditBoardCoverModal";
 import type { BoardDetail } from "@/shared/types";
 
 // react-pdf needs client-only - SSR will crash
@@ -23,6 +25,7 @@ interface Props {
 export function BoardHeader({ board, boardId }: Props) {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const [editCoverOpen, setEditCoverOpen] = useState(false);
 
   const deleteMutation = useMutation({
     mutationFn: () => boardApi.delete(boardId),
@@ -55,7 +58,19 @@ export function BoardHeader({ board, boardId }: Props) {
       </div>
 
       <div className="flex items-center gap-2">
-        {/* PDF Export */}
+        {/* Edit cover - owner and admin only */}
+        {(board.userRole === "owner" || board.userRole === "admin") && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setEditCoverOpen(true)}
+          >
+            <Image className="w-4 h-4 mr-2" />
+            Cover
+          </Button>
+        )}
+
+        {/* PDF Export - all roles */}
         <PDFDownloadLink
           document={<BoardReport board={board} />}
           fileName={`${board.title.replace(/\s+/g, "-")}-report.pdf`}
@@ -68,19 +83,27 @@ export function BoardHeader({ board, boardId }: Props) {
           )}
         </PDFDownloadLink>
 
-        {/* Delete board */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="text-destructive hover:text-destructive"
-          onClick={() => {
-            if (confirm("Delete this board and all its data?"))
-              deleteMutation.mutate();
-          }}
-        >
-          <Trash2 className="w-4 h-4" />
-        </Button>
+        {/* Delete board - owner only */}
+        {board.userRole === "owner" && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-destructive hover:text-destructive"
+            onClick={() => {
+              if (confirm("Delete this board and all its data?"))
+                deleteMutation.mutate();
+            }}
+          >
+            <Trash2 className="w-4 h-4" />
+          </Button>
+        )}
       </div>
+
+      <EditBoardCoverModal
+        board={board}
+        open={editCoverOpen}
+        onOpenChange={setEditCoverOpen}
+      />
     </header>
   );
 }
