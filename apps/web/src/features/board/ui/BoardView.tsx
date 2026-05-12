@@ -131,7 +131,7 @@ export function BoardView({ boardId }: { boardId: string }) {
       >
         {/* Overlay to make content readable over background */}
         {board.coverUrl && (
-          <div className="absolute inset-0 bg-black/30 pointer-events-none" />
+          <div className="fixed left-0 right-0 bottom-0 top-16 bg-black/40 pointer-events-none" />
         )}
 
         <DndContext
