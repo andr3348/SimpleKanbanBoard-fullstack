@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Shield, ShieldOff, Mail, UserPlus, Loader2 } from "lucide-react";
+import { Shield, ShieldOff, Mail, UserPlus, Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import type { BoardDetail } from "@/shared/types";
 
@@ -37,6 +37,17 @@ export function ManageMembersModal({ board, open, onOpenChange }: Props) {
     },
     onError: () => {
       toast.error("Failed to invite member. Check the email and try again.");
+    },
+  });
+
+  const removeMember = useMutation({
+    mutationFn: (userId: string) => boardApi.removeMember(board.id, userId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["board", board.id] });
+      toast.success("Member removed");
+    },
+    onError: () => {
+      toast.error("Failed to remove member");
     },
   });
 
@@ -95,6 +106,10 @@ export function ManageMembersModal({ board, open, onOpenChange }: Props) {
             const isOwner = member.userId === board.ownerId;
             const canManageRole =
               board.userRole === "owner" && !isOwner;
+            const canRemove =
+              board.userRole === "owner"
+                ? !isOwner
+                : board.userRole === "admin" && member.role === "member";
 
             return (
               <div
@@ -155,6 +170,18 @@ export function ManageMembersModal({ board, open, onOpenChange }: Props) {
                     <span className="text-xs font-medium text-muted-foreground capitalize px-2">
                       {member.role}
                     </span>
+                  )}
+
+                  {canRemove && (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                      onClick={() => removeMember.mutate(member.userId)}
+                      disabled={removeMember.isPending}
+                    >
+                      <Trash2 className="size-3.5" />
+                    </Button>
                   )}
                 </div>
               </div>

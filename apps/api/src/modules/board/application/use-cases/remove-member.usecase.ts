@@ -23,10 +23,35 @@ export class RemoveMembereUseCase {
   ): Promise<void> {
     const board = await this.boardRepository.findById(boardId);
     if (!board) throw new NotFoundException('Board not found');
-    if (board.ownerId !== requesterId)
-      throw new ForbiddenException('Only the owner can remove members');
+
+    // Owner can remove anyone except themselves
+    if (board.ownerId === requesterId) {
+      if (board.ownerId === targetUserId)
+        throw new ForbiddenException('Cannot remove the board owner');
+
+      await this.boardRepository.removeMember(boardId, targetUserId);
+      return;
+    }
+
+    // Only admin and above can remove members
+    const requesterRole = await this.boardRepository.getMemberRole(
+      boardId,
+      requesterId,
+    );
+    if (requesterRole !== 'admin')
+      throw new ForbiddenException('Only the owner and admins can remove members');
+
+    // Admin cannot remove the owner
     if (board.ownerId === targetUserId)
       throw new ForbiddenException('Cannot remove the board owner');
+
+    // Admin cannot remove other admins
+    const targetRole = await this.boardRepository.getMemberRole(
+      boardId,
+      targetUserId,
+    );
+    if (targetRole === 'admin')
+      throw new ForbiddenException('Admins cannot remove other admins');
 
     await this.boardRepository.removeMember(boardId, targetUserId);
   }

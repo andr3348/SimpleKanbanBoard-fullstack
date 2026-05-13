@@ -106,7 +106,7 @@ export class BoardController {
     await this.inviteMemberUseCase.execute(id, user.id, dto.email);
   }
 
-  @Delete(':id/member/:userId')
+  @Delete(':id/members/:userId')
   @HttpCode(HttpStatus.NO_CONTENT)
   async removeMember(
     @Param('id', ParseUUIDPipe) id: string,
