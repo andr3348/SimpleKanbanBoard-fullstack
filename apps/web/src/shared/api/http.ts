@@ -6,11 +6,15 @@ export const http = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
-// redirect to login on 401 Unauthorized response
+// redirect to login on 401 Unauthorized response (but not if already on login page)
 http.interceptors.response.use(
   (res) => res,
   (error) => {
-    if (error.response?.status === 401 && typeof window !== "undefined") {
+    if (
+      error.response?.status === 401 &&
+      typeof window !== "undefined" &&
+      !window.location.pathname.startsWith("/login")
+    ) {
       window.location.href = "/login";
     }
     return Promise.reject(error);

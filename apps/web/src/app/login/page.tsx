@@ -1,12 +1,29 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { http } from "@/shared/api/http";
 
 export default function LoginPage() {
   const router = useRouter();
+  const [isChecking, setIsChecking] = useState(true);
+
+  useEffect(() => {
+    // Check if already authenticated
+    const checkAuth = async () => {
+      try {
+        await http.get("/auth/me");
+        // If successful, user is already authenticated - redirect to boards
+        router.push("/boards");
+      } catch {
+        // Not authenticated, show login page
+        setIsChecking(false);
+      }
+    };
+
+    checkAuth();
+  }, [router]);
 
   const handleTestLogin = async () => {
     try {
@@ -18,6 +35,14 @@ export default function LoginPage() {
       console.error("Test login failed:", error);
     }
   };
+
+  if (isChecking) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 to-slate-800">
+        <p className="text-white">Checking authentication...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 to-slate-800">
