@@ -1,4 +1,9 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   BOARD_REPOSITORY,
   type IBoardRepository,
@@ -24,8 +29,16 @@ export class InviteMemberUseCase {
   ): Promise<void> {
     const board = await this.boardRepository.findById(boardId);
     if (!board) throw new NotFoundException('Board not found');
-    if (board.ownerId !== requesterId)
-      throw new NotFoundException('Unauthorized'); // No other user can invite members then the board owner
+
+    // Only the owner and admins can invite members
+    const requesterRole = await this.boardRepository.getMemberRole(
+      boardId,
+      requesterId,
+    );
+    if (board.ownerId !== requesterId && requesterRole !== 'admin')
+      throw new ForbiddenException(
+        'Only the owner and admins can invite members',
+      );
 
     const invitee = await this.userRepository.findByEmail(email);
     if (!invitee) throw new NotFoundException('User not found');

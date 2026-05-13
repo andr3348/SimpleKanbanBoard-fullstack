@@ -29,7 +29,9 @@ import {
 } from 'src/common/decorators/current-user.decorator';
 import { InviteMemberUseCase } from '../application/use-cases/invite-member.usecase';
 import { RemoveMembereUseCase } from '../application/use-cases/remove-member.usecase';
+import { UpdateMemberRoleUseCase } from '../application/use-cases/update-member-role.usecase';
 import { InviteMemberDto } from '../application/dtos/invite-member.dto';
+import { UpdateMemberRoleDto } from '../application/dtos/update-member-role.dto';
 import { BoardDetailResponseDto } from './dtos/board-detail-response.dto';
 
 @Controller('boards')
@@ -43,6 +45,7 @@ export class BoardController {
     private readonly deleteBoardUseCase: DeleteBoardUseCase,
     private readonly inviteMemberUseCase: InviteMemberUseCase,
     private readonly removeMemberUseCase: RemoveMembereUseCase,
+    private readonly updateMemberRoleUseCase: UpdateMemberRoleUseCase,
   ) {}
 
   @Get()
@@ -103,7 +106,7 @@ export class BoardController {
     await this.inviteMemberUseCase.execute(id, user.id, dto.email);
   }
 
-  @Delete(':id/member/:userId')
+  @Delete(':id/members/:userId')
   @HttpCode(HttpStatus.NO_CONTENT)
   async removeMember(
     @Param('id', ParseUUIDPipe) id: string,
@@ -111,5 +114,16 @@ export class BoardController {
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<void> {
     await this.removeMemberUseCase.execute(id, user.id, userId);
+  }
+
+  @Patch(':id/members/:userId')
+  @HttpCode(HttpStatus.OK)
+  async updateMemberRole(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('userId', ParseUUIDPipe) userId: string,
+    @Body() dto: UpdateMemberRoleDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ): Promise<void> {
+    await this.updateMemberRoleUseCase.execute(id, user.id, userId, dto.role);
   }
 }

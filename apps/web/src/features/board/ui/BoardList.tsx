@@ -6,7 +6,7 @@ import { useState } from "react";
 import { boardApi } from "../api/board.api";
 import { CreateBoardModal } from "./CreateBoardModal";
 import { Button } from "@/components/ui/button";
-import { Plus, Lock, Users, LogOut } from "lucide-react";
+import { Plus, Lock, Users, LogOut, LayoutDashboard } from "lucide-react";
 import { http } from "@/shared/api/http";
 import type { BoardWithRole } from "@/shared/types";
 
@@ -16,23 +16,23 @@ function BoardCard({ board }: { board: BoardWithRole }) {
   return (
     <button
       onClick={() => router.push(`/boards/${board.id}`)}
-      className="group relative h-32 rounded-xl overflow-hidden text-left shadow-sm hover:shadow-md transition-shadow"
+      className="group relative h-36 rounded-xl overflow-hidden text-left shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5"
     >
       {board.coverUrl ? (
         <img
           src={board.coverUrl}
           alt={board.title}
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
       ) : (
-        <div className="absolute inset-0 bg-gradient-to-br from-violet-500 to-indigo-600" />
+        <div className="absolute inset-0 bg-gradient-to-br from-violet-500 via-indigo-500 to-indigo-600" />
       )}
-      <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors" />
-      <div className="absolute inset-0 p-3 flex flex-col justify-between">
-        <span className="text-white font-semibold text-sm line-clamp-2">
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+      <div className="absolute inset-0 p-4 flex flex-col justify-between">
+        <span className="text-white font-semibold text-sm leading-snug line-clamp-2 drop-shadow-sm">
           {board.title}
         </span>
-        <span className="text-white/70 text-xs capitalize flex items-center gap-1">
+        <span className="text-white/80 text-xs capitalize flex items-center gap-1.5 drop-shadow-sm">
           {board.role === "owner" ? (
             <Lock className="w-3 h-3" />
           ) : (
@@ -55,7 +55,6 @@ export function BoardList() {
   });
 
   const handleLogout = async () => {
-    // Clear the auth cookie by calling a logout endpoint or just clearing local state
     try {
       await http.post("/auth/logout", {});
     } catch {
@@ -68,49 +67,88 @@ export function BoardList() {
   const memberBoards = boards.filter((b) => b.role !== "owner");
 
   if (isLoading)
-    return <div className="p-8 text-muted-foreground">Loading boards...</div>;
-
-  return (
-    <div className="container mx-auto py-8 px-4">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-semibold">My Boards</h1>
-        <div className="flex items-center gap-2">
-          <Button onClick={() => setOpen(true)}>
-            <Plus className="w-4 h-4 mr-2" /> New board
-          </Button>
-          <Button variant="outline" onClick={handleLogout}>
-            <LogOut className="w-4 h-4 mr-2" /> Logout
-          </Button>
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-zinc-50">
+        <div className="flex flex-col items-center gap-3">
+          <div className="size-8 rounded-full border-2 border-indigo-400 border-t-transparent animate-spin" />
+          <p className="text-sm text-zinc-400">Loading boards...</p>
         </div>
       </div>
+    );
 
-      {ownedBoards.length > 0 && (
-        <div className="mb-8">
-          <h2 className="text-lg font-semibold mb-4">Owned</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {ownedBoards.map((board) => (
-              <BoardCard key={board.id} board={board} />
-            ))}
+  return (
+    <div className="min-h-screen bg-zinc-50">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(99,102,241,0.06),transparent_50%)] pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(139,92,246,0.04),transparent_50%)] pointer-events-none" />
+
+      <div className="relative container mx-auto py-10 px-4">
+        <header className="flex items-center justify-between mb-10">
+          <div className="flex items-center gap-3">
+            <div className="size-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-md shadow-indigo-500/20">
+              <LayoutDashboard className="size-5 text-white" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-zinc-900">My Boards</h1>
+              <p className="text-sm text-zinc-500">
+                {boards.length} {boards.length === 1 ? "board" : "boards"}
+              </p>
+            </div>
           </div>
-        </div>
-      )}
-
-      {memberBoards.length > 0 && (
-        <div className="mb-8">
-          <h2 className="text-lg font-semibold mb-4">Member</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {memberBoards.map((board) => (
-              <BoardCard key={board.id} board={board} />
-            ))}
+          <div className="flex items-center gap-2">
+            <Button onClick={() => setOpen(true)}>
+              <Plus className="w-4 h-4 mr-2" /> New board
+            </Button>
+            <Button variant="ghost" size="icon" onClick={handleLogout}>
+              <LogOut className="w-4 h-4" />
+            </Button>
           </div>
-        </div>
-      )}
+        </header>
 
-      {boards.length === 0 && (
-        <div className="text-muted-foreground">No boards yet.</div>
-      )}
+        {boards.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-24 text-center">
+            <div className="size-16 rounded-2xl bg-zinc-100 flex items-center justify-center mb-4">
+              <LayoutDashboard className="size-8 text-zinc-300" />
+            </div>
+            <h3 className="text-lg font-medium text-zinc-900 mb-1">
+              No boards yet
+            </h3>
+            <p className="text-sm text-zinc-500 mb-6">
+              Create your first board to get started
+            </p>
+            <Button onClick={() => setOpen(true)}>
+              <Plus className="w-4 h-4 mr-2" /> Create board
+            </Button>
+          </div>
+        )}
 
-      <CreateBoardModal open={open} onOpenChange={setOpen} />
+        {ownedBoards.length > 0 && (
+          <section className="mb-10">
+            <h2 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-4">
+              Owned
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+              {ownedBoards.map((board) => (
+                <BoardCard key={board.id} board={board} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {memberBoards.length > 0 && (
+          <section className="mb-8">
+            <h2 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-4">
+              Member
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+              {memberBoards.map((board) => (
+                <BoardCard key={board.id} board={board} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        <CreateBoardModal open={open} onOpenChange={setOpen} />
+      </div>
     </div>
   );
 }
