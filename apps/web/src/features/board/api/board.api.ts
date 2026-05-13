@@ -22,6 +22,12 @@ export const boardApi = {
 
   removeMember: (boardId: string, userId: string) =>
     http.delete(`/boards/${boardId}/members/${userId}`),
+
+  updateMemberRole: (
+    boardId: string,
+    userId: string,
+    role: "admin" | "member",
+  ) => http.patch(`/boards/${boardId}/members/${userId}`, { role }),
 };
 
 export const unsplashApi = {

@@ -62,6 +62,11 @@ export interface IBoardRepository {
   isMember(boardId: string, userId: string): Promise<boolean>;
   addMember(boardId: string, userId: string): Promise<void>;
   removeMember(boardId: string, userId: string): Promise<void>;
+  updateMemberRole(
+    boardId: string,
+    userId: string,
+    role: 'admin' | 'member',
+  ): Promise<void>;
 }
 
 export const BOARD_REPOSITORY = Symbol('IBoardRepository');

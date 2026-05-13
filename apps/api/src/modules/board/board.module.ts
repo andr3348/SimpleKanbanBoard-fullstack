@@ -12,6 +12,7 @@ import { DeleteBoardUseCase } from './application/use-cases/delete-board.usecase
 import { UserModule } from '../user/user.module';
 import { InviteMemberUseCase } from './application/use-cases/invite-member.usecase';
 import { RemoveMembereUseCase } from './application/use-cases/remove-member.usecase';
+import { UpdateMemberRoleUseCase } from './application/use-cases/update-member-role.usecase';
 
 @Module({
   imports: [PrismaModule, AuthModule, UserModule],
@@ -25,6 +26,7 @@ import { RemoveMembereUseCase } from './application/use-cases/remove-member.usec
     DeleteBoardUseCase,
     InviteMemberUseCase,
     RemoveMembereUseCase,
+    UpdateMemberRoleUseCase,
   ],
   exports: [BOARD_REPOSITORY, GetBoardsUseCase],
 })

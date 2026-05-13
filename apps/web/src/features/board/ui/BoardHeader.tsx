@@ -9,6 +9,7 @@ import { boardApi } from "../api/board.api";
 import { Button } from "@/components/ui/button";
 import { BoardReport } from "./BoardReport";
 import { EditBoardCoverModal } from "./EditBoardCoverModal";
+import { ManageMembersModal } from "./ManageMembersModal";
 import type { BoardDetail } from "@/shared/types";
 
 // react-pdf needs client-only - SSR will crash
@@ -26,6 +27,7 @@ export function BoardHeader({ board, boardId }: Props) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [editCoverOpen, setEditCoverOpen] = useState(false);
+  const [membersOpen, setMembersOpen] = useState(false);
 
   const deleteMutation = useMutation({
     mutationFn: () => boardApi.delete(boardId),
@@ -58,6 +60,18 @@ export function BoardHeader({ board, boardId }: Props) {
       </div>
 
       <div className="flex items-center gap-2">
+        {/* Manage members - owner only */}
+        {board.userRole === "owner" && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setMembersOpen(true)}
+          >
+            <Users className="w-4 h-4 mr-2" />
+            Members
+          </Button>
+        )}
+
         {/* Edit cover - owner and admin only */}
         {(board.userRole === "owner" || board.userRole === "admin") && (
           <Button
@@ -103,6 +117,12 @@ export function BoardHeader({ board, boardId }: Props) {
         board={board}
         open={editCoverOpen}
         onOpenChange={setEditCoverOpen}
+      />
+
+      <ManageMembersModal
+        board={board}
+        open={membersOpen}
+        onOpenChange={setMembersOpen}
       />
     </header>
   );
