@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { boardApi } from "../api/board.api";
 import {
@@ -8,8 +9,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Shield, ShieldOff, Mail } from "lucide-react";
+import { Shield, ShieldOff, Mail, UserPlus, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import type { BoardDetail } from "@/shared/types";
 
 interface Props {
@@ -20,6 +23,22 @@ interface Props {
 
 export function ManageMembersModal({ board, open, onOpenChange }: Props) {
   const queryClient = useQueryClient();
+  const [inviteEmail, setInviteEmail] = useState("");
+
+  const canInvite =
+    board.userRole === "owner" || board.userRole === "admin";
+
+  const invite = useMutation({
+    mutationFn: (email: string) => boardApi.invite(board.id, email),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["board", board.id] });
+      setInviteEmail("");
+      toast.success("Member invited");
+    },
+    onError: () => {
+      toast.error("Failed to invite member. Check the email and try again.");
+    },
+  });
 
   const updateRole = useMutation({
     mutationFn: ({
@@ -41,10 +60,40 @@ export function ManageMembersModal({ board, open, onOpenChange }: Props) {
           <DialogTitle>Manage members</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-1">
+        {canInvite && (
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
+              <Input
+                value={inviteEmail}
+                onChange={(e) => setInviteEmail(e.target.value)}
+                placeholder="Enter email to invite..."
+                className="pl-9 h-9"
+                onKeyDown={(e) =>
+                  e.key === "Enter" &&
+                  inviteEmail.trim() &&
+                  invite.mutate(inviteEmail.trim())
+                }
+              />
+            </div>
+            <Button
+              size="sm"
+              onClick={() => invite.mutate(inviteEmail.trim())}
+              disabled={!inviteEmail.trim() || invite.isPending}
+            >
+              {invite.isPending ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <UserPlus className="size-4" />
+              )}
+            </Button>
+          </div>
+        )}
+
+        <div className="space-y-1 max-h-80 overflow-y-auto">
           {board.members.map((member) => {
             const isOwner = member.userId === board.ownerId;
-            const canManage =
+            const canManageRole =
               board.userRole === "owner" && !isOwner;
 
             return (
@@ -70,7 +119,7 @@ export function ManageMembersModal({ board, open, onOpenChange }: Props) {
                   </p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
-                  {canManage && member.role === "member" && (
+                  {canManageRole && member.role === "member" && (
                     <Button
                       size="sm"
                       variant="outline"
@@ -86,7 +135,7 @@ export function ManageMembersModal({ board, open, onOpenChange }: Props) {
                       Make admin
                     </Button>
                   )}
-                  {canManage && member.role === "admin" && (
+                  {canManageRole && member.role === "admin" && (
                     <Button
                       size="sm"
                       variant="outline"
@@ -102,7 +151,7 @@ export function ManageMembersModal({ board, open, onOpenChange }: Props) {
                       Remove admin
                     </Button>
                   )}
-                  {!canManage && (
+                  {!canManageRole && (
                     <span className="text-xs font-medium text-muted-foreground capitalize px-2">
                       {member.role}
                     </span>

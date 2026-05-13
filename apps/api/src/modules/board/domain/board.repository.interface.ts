@@ -60,6 +60,10 @@ export interface IBoardRepository {
   update(id: string, input: UpdateBoardInput): Promise<Board>;
   delete(id: string): Promise<void>;
   isMember(boardId: string, userId: string): Promise<boolean>;
+  getMemberRole(
+    boardId: string,
+    userId: string,
+  ): Promise<'admin' | 'member' | null>;
   addMember(boardId: string, userId: string): Promise<void>;
   removeMember(boardId: string, userId: string): Promise<void>;
   updateMemberRole(

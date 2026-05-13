@@ -176,6 +176,19 @@ export class BoardRepository implements IBoardRepository {
     });
   }
 
+  async getMemberRole(
+    boardId: string,
+    userId: string,
+  ): Promise<'admin' | 'member' | null> {
+    const member = await this.prisma.boardMember.findUnique({
+      where: { boardId_userId: { boardId, userId } },
+      select: { role: true },
+    });
+
+    if (!member) return null;
+    return member.role === 'ADMIN' ? 'admin' : 'member';
+  }
+
   // Checks if a user is a member of a board
   async isMember(boardId: string, userId: string): Promise<boolean> {
     const member = await this.prisma.boardMember.findUnique({

@@ -60,17 +60,15 @@ export function BoardHeader({ board, boardId }: Props) {
       </div>
 
       <div className="flex items-center gap-2">
-        {/* Manage members - owner only */}
-        {board.userRole === "owner" && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setMembersOpen(true)}
-          >
-            <Users className="w-4 h-4 mr-2" />
-            Members
-          </Button>
-        )}
+        {/* Manage members - all roles */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setMembersOpen(true)}
+        >
+          <Users className="w-4 h-4 mr-2" />
+          Members ({board.members.length})
+        </Button>
 
         {/* Edit cover - owner and admin only */}
         {(board.userRole === "owner" || board.userRole === "admin") && (
