@@ -25,7 +25,7 @@ export function AddColumnForm({ boardId }: { boardId: string }) {
     return (
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-2 w-64 shrink-0 p-3 rounded-xl border-2 border-dashed border-border text-muted-foreground hover:border-primary hover:text-primary transition-colors text-sm font-medium"
+        className="flex items-center gap-2 w-64 shrink-0 p-3 rounded-xl border-2 border-dashed border-zinc-300 text-zinc-400 hover:border-indigo-400 hover:text-indigo-500 transition-colors text-sm font-medium bg-white/30 hover:bg-white/50 backdrop-blur-sm"
       >
         <Plus className="w-4 h-4" /> Add column
       </button>
@@ -33,7 +33,7 @@ export function AddColumnForm({ boardId }: { boardId: string }) {
   }
 
   return (
-    <div className="w-64 shrink-0 rounded-xl bg-muted/40 border p-3 space-y-2">
+    <div className="w-64 shrink-0 rounded-xl bg-white/70 border border-zinc-200/60 p-3 space-y-2 shadow-sm">
       <Input
         value={title}
         onChange={(e) => setTitle(e.target.value)}

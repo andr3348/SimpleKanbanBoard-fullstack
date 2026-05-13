@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import {
   CreateCardInput,
   ICardRepository,
@@ -48,12 +48,65 @@ export class CardRepository implements ICardRepository {
     return this.toEntity(row);
   }
 
-  async move(id: string, columnId: string, position: number): Promise<Card> {
-    const row = await this.prisma.card.update({
-      where: { id },
-      data: { columnId, position },
+  async move(
+    id: string,
+    targetColumnId: string,
+    targetPosition: number,
+  ): Promise<Card> {
+    const card = await this.prisma.card.findUnique({ where: { id } });
+    if (!card) throw new NotFoundException('Card not found');
+
+    const fromColumnId = card.columnId;
+    const fromPosition = card.position;
+
+    if (fromColumnId === targetColumnId && fromPosition === targetPosition) {
+      return this.toEntity(card);
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      if (fromColumnId === targetColumnId) {
+        if (fromPosition < targetPosition) {
+          await tx.card.updateMany({
+            where: {
+              columnId: fromColumnId,
+              position: { gt: fromPosition, lte: targetPosition },
+            },
+            data: { position: { decrement: 1 } },
+          });
+        } else {
+          await tx.card.updateMany({
+            where: {
+              columnId: fromColumnId,
+              position: { gte: targetPosition, lt: fromPosition },
+            },
+            data: { position: { increment: 1 } },
+          });
+        }
+      } else {
+        await tx.card.updateMany({
+          where: {
+            columnId: fromColumnId,
+            position: { gt: fromPosition },
+          },
+          data: { position: { decrement: 1 } },
+        });
+
+        await tx.card.updateMany({
+          where: {
+            columnId: targetColumnId,
+            position: { gte: targetPosition },
+          },
+          data: { position: { increment: 1 } },
+        });
+      }
+
+      const row = await tx.card.update({
+        where: { id },
+        data: { columnId: targetColumnId, position: targetPosition },
+      });
+
+      return this.toEntity(row);
     });
-    return this.toEntity(row);
   }
 
   async delete(id: string): Promise<void> {

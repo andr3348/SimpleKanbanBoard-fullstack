@@ -25,6 +25,9 @@ export function BoardView({ boardId }: { boardId: string }) {
   const queryClient = useQueryClient();
   const { board, setBoard, moveCard } = useBoardStore();
   const [activeCard, setActiveCard] = useState<CardInBoard | null>(null);
+  const [dragOrigin, setDragOrigin] = useState<{
+    fromColumnId: string;
+  } | null>(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ["board", boardId],
@@ -65,10 +68,14 @@ export function BoardView({ boardId }: { boardId: string }) {
     board?.columns.find((col) => col.id === id);
 
   const handleDragStart = ({ active }: DragStartEvent) => {
-    const card = board?.columns
-      .flatMap((c) => c.cards)
-      .find((c) => c.id === active.id);
+    const cardId = active.id as string;
+    const col = board?.columns.find((c) =>
+      c.cards.some((c) => c.id === cardId),
+    );
+    if (!col) return;
+    const card = col.cards.find((c) => c.id === cardId);
     setActiveCard(card ?? null);
+    setDragOrigin({ fromColumnId: col.id });
   };
 
   const handleDragOver = ({ active, over }: DragOverEvent) => {
@@ -86,21 +93,21 @@ export function BoardView({ boardId }: { boardId: string }) {
 
   const handleDragEnd = ({ active, over }: DragEndEvent) => {
     setActiveCard(null);
-    if (!over || !board) return;
+    if (!over || !board || !dragOrigin) return;
+    setDragOrigin(null);
 
     const activeId = active.id as string;
     const overId = over.id as string;
 
-    const fromCol = findColumnByCardId(activeId);
     const toCol = findColumnByCardId(overId) ?? findColumnById(overId);
-    if (!fromCol || !toCol) return;
+    if (!toCol) return;
 
     const index = toCol.cards.findIndex((c) => c.id === overId);
     const position = index === -1 ? Math.max(0, toCol.cards.length - 1) : index;
 
     moveMutation.mutate({
       cardId: activeId,
-      fromColumnId: fromCol.id,
+      fromColumnId: dragOrigin.fromColumnId,
       toColumnId: toCol.id,
       position,
     });
@@ -108,14 +115,17 @@ export function BoardView({ boardId }: { boardId: string }) {
 
   if (isLoading || !board) {
     return (
-      <div className="flex h-screen items-center justify-center text-muted-foreground">
-        Loading board...
+      <div className="min-h-screen flex items-center justify-center bg-zinc-50">
+        <div className="flex flex-col items-center gap-3">
+          <div className="size-8 rounded-full border-2 border-indigo-400 border-t-transparent animate-spin" />
+          <p className="text-sm text-zinc-400">Loading board...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-background">
+    <div className="flex flex-col h-screen overflow-hidden bg-zinc-50">
       <BoardHeader board={board} boardId={boardId} />
 
       <main
@@ -129,9 +139,12 @@ export function BoardView({ boardId }: { boardId: string }) {
           backgroundAttachment: "fixed",
         }}
       >
-        {/* Overlay to make content readable over background */}
+        {!board.coverUrl && (
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(99,102,241,0.03),transparent_50%)] pointer-events-none" />
+        )}
+
         {board.coverUrl && (
-          <div className="fixed left-0 right-0 bottom-0 top-16 bg-black/40 pointer-events-none" />
+          <div className="fixed left-0 right-0 bottom-0 top-16 bg-black/50 pointer-events-none backdrop-blur-[1px]" />
         )}
 
         <DndContext
@@ -141,7 +154,7 @@ export function BoardView({ boardId }: { boardId: string }) {
           onDragOver={handleDragOver}
           onDragEnd={handleDragEnd}
         >
-          <div className="flex gap-3 h-full items-start p-4 w-max relative z-10">
+          <div className="flex gap-3 h-full items-start p-5 w-max relative z-10">
             {board.columns.map((col) => (
               <BoardColumn
                 key={col.id}
@@ -155,12 +168,12 @@ export function BoardView({ boardId }: { boardId: string }) {
 
           <DragOverlay>
             {activeCard && (
-              <div className="bg-card border rounded-lg p-3 w-64 shadow-xl rotate-1 opacity-95">
-                <p className="text-sm font-medium truncate">
+              <div className="bg-white border border-zinc-200 rounded-lg p-3 w-64 shadow-xl rotate-2 opacity-95">
+                <p className="text-sm font-medium text-zinc-800 truncate">
                   {activeCard.title}
                 </p>
                 {activeCard.description && (
-                  <p className="text-xs text-muted-foreground mt-1 truncate">
+                  <p className="text-xs text-zinc-400 mt-1 truncate">
                     {activeCard.description}
                   </p>
                 )}

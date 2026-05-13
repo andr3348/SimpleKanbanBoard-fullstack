@@ -43,64 +43,65 @@ export function BoardHeader({ board, boardId }: Props) {
   );
 
   return (
-    <header className="flex items-center gap-3 px-4 py-3 border-b bg-background/80 backdrop-blur shrink-0">
+    <header className="flex items-center gap-3 px-5 py-3 border-b border-border/60 bg-white shadow-sm shrink-0">
       <Button
         variant="ghost"
         size="icon"
         onClick={() => router.push("/boards")}
+        className="text-zinc-400 hover:text-zinc-700"
       >
         <ArrowLeft className="w-4 h-4" />
       </Button>
 
       <div className="flex-1 min-w-0">
-        <h1 className="font-semibold truncate">{board.title}</h1>
-        <p className="text-xs text-muted-foreground">
-          {board.columns.length} columns · {totalCards} cards
+        <h1 className="font-semibold truncate text-zinc-900">
+          {board.title}
+        </h1>
+        <p className="text-xs text-zinc-400">
+          {board.columns.length} columns &middot; {totalCards} cards
         </p>
       </div>
 
-      <div className="flex items-center gap-2">
-        {/* Manage members - all roles */}
+      <div className="flex items-center gap-1.5">
         <Button
-          variant="outline"
+          variant="ghost"
           size="sm"
           onClick={() => setMembersOpen(true)}
+          className="text-zinc-600"
         >
-          <Users className="w-4 h-4 mr-2" />
-          Members ({board.members.length})
+          <Users className="w-4 h-4 mr-1.5" />
+          {board.members.length}
         </Button>
 
-        {/* Edit cover - owner and admin only */}
         {(board.userRole === "owner" || board.userRole === "admin") && (
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
             onClick={() => setEditCoverOpen(true)}
+            className="text-zinc-600"
           >
-            <Image className="w-4 h-4 mr-2" />
+            <Image className="w-4 h-4 mr-1.5" />
             Cover
           </Button>
         )}
 
-        {/* PDF Export - all roles */}
         <PDFDownloadLink
           document={<BoardReport board={board} />}
           fileName={`${board.title.replace(/\s+/g, "-")}-report.pdf`}
         >
           {({ loading }) => (
-            <Button variant="outline" size="sm" disabled={loading}>
-              <FileText className="w-4 h-4 mr-2" />
-              {loading ? "Generating..." : "Export PDF"}
+            <Button variant="ghost" size="sm" disabled={loading} className="text-zinc-600">
+              <FileText className="w-4 h-4 mr-1.5" />
+              {loading ? "Generating..." : "PDF"}
             </Button>
           )}
         </PDFDownloadLink>
 
-        {/* Delete board - owner only */}
         {board.userRole === "owner" && (
           <Button
             variant="ghost"
-            size="icon"
-            className="text-destructive hover:text-destructive"
+            size="sm"
+            className="text-zinc-400 hover:text-red-600 hover:bg-red-50 ml-2"
             onClick={() => {
               if (confirm("Delete this board and all its data?"))
                 deleteMutation.mutate();
