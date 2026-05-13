@@ -24,7 +24,10 @@ docker compose up -d
 # 4. Apply database migrations
 npx turbo run db:deploy
 
-# 5. Start development servers (frontend + backend)
+# 5. Build packages (compiles shared TypeScript packages to JS)
+npx turbo run build
+
+# 6. Start development servers (frontend + backend)
 npx turbo run dev
 ```
 
