@@ -35,15 +35,15 @@ export function LoginForm() {
 
   return (
     <form className="space-y-5">
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         <Label htmlFor="login-email">Email</Label>
         <div className="relative">
-          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
+          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-zinc-400 pointer-events-none" />
           <Input
             id="login-email"
             type="email"
             placeholder="you@example.com"
-            className="pl-9"
+            className="pl-9 h-10"
             {...register("email")}
           />
         </div>
@@ -52,21 +52,21 @@ export function LoginForm() {
         )}
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         <Label htmlFor="login-password">Password</Label>
         <div className="relative">
-          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
+          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-zinc-400 pointer-events-none" />
           <Input
             id="login-password"
             type={showPassword ? "text" : "password"}
-            placeholder="••••••••"
-            className="pl-9 pr-9"
+            placeholder="Enter your password"
+            className="pl-9 pr-9 h-10"
             {...register("password")}
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-700 transition-colors"
             tabIndex={-1}
           >
             {showPassword ? (
@@ -83,8 +83,7 @@ export function LoginForm() {
 
       <Button
         onClick={handleSubmit(onSubmit)}
-        className="w-full"
-        size="lg"
+        className="w-full h-10"
         disabled={isSubmitting}
       >
         {isSubmitting ? "Signing in..." : "Sign in"}
